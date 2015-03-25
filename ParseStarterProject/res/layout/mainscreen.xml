@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:id="@+id/top" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background"
+        android:orientation="vertical"
+        android:layout_above="@id/top" >
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="wrap_content"
+            android:layout_height="387dp"
+            android:layout_alignParentBottom="true" >
+        </ListView>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+         >
+
+        <Button
+            android:id="@+id/tab1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="45dp"
+            android:layout_toLeftOf="@+id/button2"
+            android:text="Button" />
+
+        <Button
+            android:id="@+id/tab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="71dp"
+            android:text="Button" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/llSend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:paddingBottom="10dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="5dp" >
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btSend"
+            android:layout_toLeftOf="@+id/btSend"
+            android:gravity="top"
+            android:imeOptions="actionSend"
+            android:inputType="textShortMessage" />
+
+        <Button
+            android:id="@+id/btSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical|right"
+            android:paddingRight="10dp"
+            android:textSize="18sp" >
+        </Button>
+    </RelativeLayout>
+
+</RelativeLayout>

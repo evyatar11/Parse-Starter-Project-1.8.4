@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:weightSum="10" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="7"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/signTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Sign-up form"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="45dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="3"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/signMail"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter e-mail address" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/signNickname"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter nickname" />
+
+        <EditText
+            android:id="@+id/signPhone"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter phone number" />
+
+        <EditText
+            android:id="@+id/signPass"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter password"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Button
+            android:id="@+id/createUser"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_dark"
+            android:text="Create user" />
+
+    </LinearLayout>
+
+</LinearLayout>

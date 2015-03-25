@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:weightSum="10" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="7"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Neighbors"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="50dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="3"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/etMail"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="left"
+            android:hint="E-mail" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/etPass"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:hint="Password" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="252dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_dark"
+            android:text="Log In" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <Button
+            android:id="@+id/signup"
+            android:layout_width="252dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_dark"
+            android:text="Sign Up" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <TextView
+            android:id="@+id/facebook_banner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="or login with"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/primary_text_dark" />
+
+
+        <ImageButton
+            android:id="@+id/facebookButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/facebook" />
+    </LinearLayout>
+
+</LinearLayout>
