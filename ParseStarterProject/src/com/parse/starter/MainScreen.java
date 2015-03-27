@@ -2,22 +2,18 @@ package com.parse.starter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -39,19 +35,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.support.v4.app.FragmentActivity;
 
-public class MainScreen extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener,LocationListener {
+public class MainScreen extends Activity implements ConnectionCallbacks, OnConnectionFailedListener,LocationListener {
 
     public static final String USER_ID_KEY = "userId";
 
     // GPSTracker class
-    private static final String TAG = MainScreen.class.getName();
-    private static String sUserId;
     private Event currentEvent;
     private List<Tab> list;
     private List<Post> postList;
-    private ProgressDialog progress;
     private EditText etMessage;
     private Button btSend;
     private Button btt1, btt2;
@@ -59,24 +51,56 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
     private ArrayList<Post> listofposts;
     private ArrayAdapter<Post> adapter;
     private boolean tab1;
-    private Location mCurrentLocation,mLastLocation;
-    private Context context;
-    private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    // Request code to use when launching the resolution activity
-    private static final int REQUEST_RESOLVE_ERROR = 1001;
-    // Unique tag for the error dialog fragment
-    private static final String DIALOG_ERROR = "dialog_error";
-    // Bool to track whether the app is already resolving an error
-    private boolean mResolvingError = false;
     private boolean mRequestingLocationUpdates=true;
+    private Location currentLocation;
 
+    private GoogleApiClient mGoogleApiClient;
+
+    public MainScreen() {
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        initXml();
+        //google play request location update parameters setup
+        createLocationRequest();
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                while(currentLocation==null){}
+                mRequestingLocationUpdates=false;
+            }
+        });
+        Log.i("latitude",currentLocation.getLatitude()+"");
+//      getCurrentArea();
+//      getListOfTabs();
+        btt1.setText(list.get(0).getName().toString());
+        btt2.setText(list.get(1).getName().toString());
+
+
+    }
+
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    private void initXml() {
         setContentView(R.layout.activity_list_view_android_example);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         btt1 = (Button) findViewById(R.id.tab1);
@@ -92,52 +116,9 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
         adapter = new ArrayAdapter<Post>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1,
                 listofposts);
-        progress = ProgressDialog.show(this, "Loading Data", "Please Wait",
-                true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-//                createDatabase();
-                buildGoogleApiClient();
-//        createLocationRequest();
-                mGoogleApiClient.connect();
-
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progress.dismiss();
-                        getCurrentArea();
-                        getListOfTabs();
-                        btt1.setText(list.get(0).getName().toString());
-                        btt2.setText(list.get(1).getName().toString());
-                    }
-                });
-            }
-        }).start();
-
     }
 
-    @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
     private void getPostsInCurrentTab(Tab tab) {
         ParseQuery<Post> query = Post.getQuery();
         query.whereEqualTo(Post.PARENT_TAB, tab);
@@ -165,31 +146,27 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
 
     private void getCurrentArea() {
         // check if GPS enabled
-            double latitude = mLastLocation.getLatitude();
-            double longitude = mLastLocation.getLongitude();
-//            Toast.makeText(MainScreen.this,"lat "+ latitude+ "long "+ longitude,Toast.LENGTH_LONG ).show();
-            ParseGeoPoint point = new ParseGeoPoint(latitude, longitude);
-//            Toast.makeText(context,"lat "+ point.getLatitude()+ "long "+ point.getLongitude(),Toast.LENGTH_LONG ).show();
+        double latitude = mLastLocation.getLatitude();
+        double longitude = mLastLocation.getLongitude();
+        ParseGeoPoint point = new ParseGeoPoint(latitude, longitude);
 
-            Log.i("lat before",latitude+" ");
-            Log.i("long before",longitude+" ");
-            Log.i("lat after",point.getLatitude()+" ");
-            Log.i("long after",point.getLongitude()+" ");
-            ParseQuery<Event> query = Event.getQuery();
+        Log.i("lat before",latitude+" ");
+        Log.i("long before",longitude+" ");
+        Log.i("lat after",point.getLatitude()+" ");
+        Log.i("long after",point.getLongitude()+" ");
+        ParseQuery<Event> query = Event.getQuery();
 //           query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
-            query.whereNear(Event.LOCATION_KEY, point);
+        query.whereNear(Event.LOCATION_KEY, point);
 //            query.setLimit(1);
-            try {
-                currentEvent = query.getFirst();
-                getApplicationContext();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+        try {
+            currentEvent = query.getFirst();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
 
 
     }
-
 
     private void createDatabase() {
 
@@ -253,34 +230,19 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
         tab9.saveInBackground();tab10.saveInBackground();
     }
 
-//    @Override
-//    public void onConnected(Bundle bundle) {
-////        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-////                mGoogleApiClient);
-//        boolean mRequestingLocationUpdates=true;
-//        if (mRequestingLocationUpdates) {
-//            startLocationUpdates();
-//        }
-////        if (mLastLocation != null) {
-////            Log.i("latitude",mLastLocation.getLatitude()+"");
-////            Log.i("longitude",mLastLocation.getLongitude()+"");
-////            }
-//    }
 
+
+    protected void startLocationUpdates() {
+        currentLocation = LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
+    public void onConnected(Bundle bundle) {
 
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
-    }
-
-    protected void startLocationUpdates() {
-//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
-        mLastLocation=LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.i("latitude",mLastLocation.getLatitude()+"");
-        Log.i("longitude",mLastLocation.getLongitude()+"");
     }
 
     @Override
@@ -289,62 +251,8 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        if (mResolvingError) {
-            // Already attempting to resolve an error.
-            return;
-        } else if (result.hasResolution()) {
-            try {
-                mResolvingError = true;
-                result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
-            } catch (IntentSender.SendIntentException e) {
-                // There was an error with the resolution intent. Try again.
-                mGoogleApiClient.connect();
-            }
-        } else {
-            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
-            showErrorDialog(result.getErrorCode());
-            mResolvingError = true;
-        }
-    }
-
-    // The rest of this code is all about building the error dialog
-
-    /* Creates a dialog for an error message */
-    private void showErrorDialog(int errorCode) {
-        // Create a fragment for the error dialog
-        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
-        // Pass the error that should be displayed
-        Bundle args = new Bundle();
-        args.putInt(DIALOG_ERROR, errorCode);
-        dialogFragment.setArguments(args);
-//        dialogFragment.show(getSupportFragmentManager(), "errordialog");
-    }
-
-    /* Called from ErrorDialogFragment when the dialog is dismissed. */
-    public void onDialogDismissed() {
-        mResolvingError = false;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_RESOLVE_ERROR) {
-            mResolvingError = false;
-            if (resultCode == RESULT_OK) {
-                // Make sure the app is not already connected or attempting to connect
-                if (!mGoogleApiClient.isConnecting() &&
-                        !mGoogleApiClient.isConnected()) {
-                    mGoogleApiClient.connect();
-                }
-            }
-        }
-    }
-
-    @Override
     public void onLocationChanged(Location location) {
-//        mCurrentLocation = location;
-//        Log.i("latitude",mCurrentLocation.getLatitude()+"");
-//        Log.i("longitude",mCurrentLocation.getLongitude()+"");
+
     }
 
     @Override
@@ -362,74 +270,62 @@ public class MainScreen extends FragmentActivity implements ConnectionCallbacks,
 
     }
 
-    /* A fragment to display an error dialog */
-    public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() { }
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Get the error code and retrieve the appropriate dialog
-            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
-            return GooglePlayServicesUtil.getErrorDialog(errorCode,
-                    this.getActivity(), REQUEST_RESOLVE_ERROR);
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            ((MainScreen)getActivity()).onDialogDismissed();
-        }
     }
+
 
     class TabListener implements OnClickListener {
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.tab1) {
-            tab1 = true;
-            adapter.clear();
-            getPostsInCurrentTab(list.get(0));
-            Log.d("tag", "postlist");
-            for (int i = 0; i < postList.size(); i++) {
-                listofposts.add(postList.get(i));
-                adapter.notifyDataSetChanged();
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.tab1) {
+                tab1 = true;
+                adapter.clear();
+                getPostsInCurrentTab(list.get(0));
+                Log.d("tag", "postlist");
+                for (int i = 0; i < postList.size(); i++) {
+                    listofposts.add(postList.get(i));
+                    adapter.notifyDataSetChanged();
 
-            }
-            listView.setAdapter(adapter);
-        }
-        if (v.getId() == R.id.tab2) {
-            tab1 = false;
-            adapter.clear();
-            getPostsInCurrentTab(list.get(1));
-            for (int i = 0; i < postList.size(); i++) {
-                listofposts.add(postList.get(i));
-                adapter.notifyDataSetChanged();
-
-            }
-            listView.setAdapter(adapter);
-        }
-        if (v.getId() == R.id.btSend) {
-            String data = etMessage.getText().toString();
-            Post message = new Post();
-            message.setBody(data);
-            message.setAuthor(ParseUser.getCurrentUser());
-            if (tab1 == true)
-                message.setParent(list.get(0));
-            else
-                message.setParent(list.get(1));
-            try {
-                message.save();
-                listofposts.add(message);
-                adapter.notifyDataSetChanged();
+                }
                 listView.setAdapter(adapter);
-                Toast.makeText(MainScreen.this,
-                        "Successfully created message on Parse",
-                        Toast.LENGTH_SHORT).show();
-            } catch (ParseException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
             }
-            etMessage.setText("");
+            if (v.getId() == R.id.tab2) {
+                tab1 = false;
+                adapter.clear();
+                getPostsInCurrentTab(list.get(1));
+                for (int i = 0; i < postList.size(); i++) {
+                    listofposts.add(postList.get(i));
+                    adapter.notifyDataSetChanged();
+
+                }
+                listView.setAdapter(adapter);
+            }
+            if (v.getId() == R.id.btSend) {
+                String data = etMessage.getText().toString();
+                Post message = new Post();
+                message.setBody(data);
+                message.setAuthor(ParseUser.getCurrentUser());
+                if (tab1 == true)
+                    message.setParent(list.get(0));
+                else
+                    message.setParent(list.get(1));
+                try {
+                    message.save();
+                    listofposts.add(message);
+                    adapter.notifyDataSetChanged();
+                    listView.setAdapter(adapter);
+                    Toast.makeText(MainScreen.this,
+                            "Successfully created message on Parse",
+                            Toast.LENGTH_SHORT).show();
+                } catch (ParseException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                etMessage.setText("");
+            }
         }
     }
-}
 }
