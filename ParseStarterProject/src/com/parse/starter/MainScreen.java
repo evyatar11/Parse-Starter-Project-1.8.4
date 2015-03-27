@@ -2,14 +2,13 @@ package com.parse.starter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,13 +39,24 @@ public class MainScreen extends Activity {
 	private ArrayList<Post> listofposts;
 	private ArrayAdapter<Post> adapter;
 	private boolean tab1;
+    private Context context;
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_view_android_example);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        gps = new GPSTracker(getApplicationContext());
 		btt1 = (Button) findViewById(R.id.tab1);
 		btt2 = (Button) findViewById(R.id.tab2);
 		etMessage = (EditText) findViewById(R.id.etMessage);
@@ -65,8 +75,9 @@ public class MainScreen extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				getCurrentArea();
-				getListOfTabs();
+//              createDatabase();
+                getCurrentArea();
+                getListOfTabs();
 
 				runOnUiThread(new Runnable() {
 					@Override
@@ -78,7 +89,8 @@ public class MainScreen extends Activity {
 				});
 			}
 		}).start();
-//		createDatabase();
+
+
 	}
 
 	private void getPostsInCurrentTab(Tab tab) {
@@ -107,14 +119,20 @@ public class MainScreen extends Activity {
 	}
 
 	private void getCurrentArea() {
-		gps = new GPSTracker(MainScreen.this);
 		// check if GPS enabled
 		if (gps.canGetLocation()) {
 			double latitude = gps.getLatitude();
 			double longitude = gps.getLongitude();
+//            Toast.makeText(MainScreen.this,"lat "+ latitude+ "long "+ longitude,Toast.LENGTH_LONG ).show();
 			ParseGeoPoint point = new ParseGeoPoint(latitude, longitude);
-			ParseQuery<Event> query = Event.getQuery();
-//			query.whereWithinKilometers(Event.LOCATION_KEY, point, 3.0);
+//            Toast.makeText(context,"lat "+ point.getLatitude()+ "long "+ point.getLongitude(),Toast.LENGTH_LONG ).show();
+
+            Log.i("lat before",latitude+" ");
+            Log.i("long before",longitude+" ");
+            Log.i("lat after",point.getLatitude()+" ");
+            Log.i("long after",point.getLongitude()+" ");
+            ParseQuery<Event> query = Event.getQuery();
+//            query.whereWithinKilometers(Event.LOCATION_KEY, point, 1.0);
 			query.whereNear(Event.LOCATION_KEY, point);
 			query.setLimit(1);
 			try {
@@ -129,32 +147,52 @@ public class MainScreen extends Activity {
 
 	private void createDatabase() {
 
-		ParseGeoPoint fikus = new ParseGeoPoint(32.113224,34.818085);
-		Event event = new Event();
-		event.setLocation(fikus);
-		event.setName("Fikus");
-		event.saveInBackground();
-		ParseGeoPoint kirya = new ParseGeoPoint(32.114838, 34.817856);
-		Event event2 = new Event();
-		event2.setLocation(kirya);
-		event2.setName("Kirya");
+		ParseGeoPoint laniado = new ParseGeoPoint(32.345063,34.857255);
+        ParseGeoPoint sironit = new ParseGeoPoint(32.330199, 34.848404);
+        ParseGeoPoint zometNearHome = new ParseGeoPoint(32.329581, 34.862058);
+        ParseGeoPoint home = new ParseGeoPoint(32.329041, 34.863829);
+		Event event1 = new Event();
+        Event event2 = new Event();
+        Event event3 = new Event();
+        Event event4 = new Event();
+        Tab tab1 = new Tab();
+        Tab tab2 = new Tab();
+        Tab tab3 = new Tab();
+        Tab tab4 = new Tab();
+        Tab tab5 = new Tab();
+        Tab tab6 = new Tab();
+        Tab tab7 = new Tab();
+        Tab tab8 = new Tab();
+		event1.setLocation(laniado);
+        event2.setLocation(sironit);
+        event3.setLocation(zometNearHome);
+        event4.setLocation(home);
+		event1.setName("Laniado");
+		event2.setName("sironit");
+        event3.setName("zometNearHome");
+        event4.setName("home");
+        event1.saveInBackground();
 		event2.saveInBackground();
-		Tab tab1 = new Tab();
-		tab1.setParent(event);
-		tab1.setName("Afeka Fikus News");
-		Tab tab2 = new Tab();
-		tab2.setParent(event);
-		tab2.setName("Tremps");
-		Tab tab3 = new Tab();
-		tab3.setParent(event2);
-		tab3.setName("Afeka Kirya News");
-		Tab tab4 = new Tab();
+        event3.saveInBackground();
+        event4.saveInBackground();
+		tab1.setParent(event1);
+        tab2.setParent(event1);
+		tab1.setName("Laniado News");
+		tab2.setName("Laniado Tremps");
+        tab3.setParent(event2);
 		tab4.setParent(event2);
-		tab4.setName("Tremps");
-		tab1.saveInBackground();
-		tab2.saveInBackground();
-		tab3.saveInBackground();
-		tab4.saveInBackground();
+		tab3.setName("Sironit News");
+		tab4.setName("Sironit Tremps");
+        tab5.setParent(event3);
+        tab6.setParent(event3);
+        tab5.setName("zometNearHome News");
+        tab6.setName("zometNearHome Tremps");
+        tab7.setParent(event4);
+        tab8.setParent(event4);
+        tab7.setName("home News");
+        tab8.setName("home Tremps");
+		tab1.saveInBackground(); tab2.saveInBackground();tab3.saveInBackground();tab4.saveInBackground();
+        tab5.saveInBackground(); tab6.saveInBackground();tab7.saveInBackground();tab8.saveInBackground();
 	}
 
 	class TabListener implements OnClickListener {
