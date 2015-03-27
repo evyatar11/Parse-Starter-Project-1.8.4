@@ -2,11 +2,9 @@ package com.parse.starter;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.parse.ParseException;
@@ -24,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -36,7 +33,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainScreen extends Activity implements ConnectionCallbacks, OnConnectionFailedListener,LocationListener {
+public class MainScreen extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String USER_ID_KEY = "userId";
 
@@ -51,7 +48,7 @@ public class MainScreen extends Activity implements ConnectionCallbacks, OnConne
     private ArrayList<Post> listofposts;
     private ArrayAdapter<Post> adapter;
     private boolean tab1;
-    private LocationRequest mLocationRequest;
+    LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates=true;
     private Location currentLocation;
 
@@ -66,21 +63,27 @@ public class MainScreen extends Activity implements ConnectionCallbacks, OnConne
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         initXml();
-        //google play request location update parameters setup
-        createLocationRequest();
-        runOnUiThread(new Runnable() {
 
-            @Override
-            public void run() {
-                while(currentLocation==null){}
-                mRequestingLocationUpdates=false;
-            }
-        });
-        Log.i("latitude",currentLocation.getLatitude()+"");
-//      getCurrentArea();
-//      getListOfTabs();
-        btt1.setText(list.get(0).getName().toString());
-        btt2.setText(list.get(1).getName().toString());
+        //google play request location update parameters setup
+        buildGoogleApiClient();
+        createLocationRequest();
+        mGoogleApiClient.connect();
+
+
+
+//        runOnUiThread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                while(currentLocation==null){}
+//                mRequestingLocationUpdates=false;
+//            }
+//        });
+//        Log.i("latitude",currentLocation.getLatitude()+"");
+////      getCurrentArea();
+////      getListOfTabs();
+//        btt1.setText(list.get(0).getName().toString());
+//        btt2.setText(list.get(1).getName().toString());
 
 
     }
@@ -146,8 +149,8 @@ public class MainScreen extends Activity implements ConnectionCallbacks, OnConne
 
     private void getCurrentArea() {
         // check if GPS enabled
-        double latitude = mLastLocation.getLatitude();
-        double longitude = mLastLocation.getLongitude();
+        double latitude = currentLocation.getLatitude();
+        double longitude = currentLocation.getLongitude();
         ParseGeoPoint point = new ParseGeoPoint(latitude, longitude);
 
         Log.i("lat before",latitude+" ");
@@ -155,9 +158,9 @@ public class MainScreen extends Activity implements ConnectionCallbacks, OnConne
         Log.i("lat after",point.getLatitude()+" ");
         Log.i("long after",point.getLongitude()+" ");
         ParseQuery<Event> query = Event.getQuery();
-//           query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
+           query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
         query.whereNear(Event.LOCATION_KEY, point);
-//            query.setLimit(1);
+            query.setLimit(1);
         try {
             currentEvent = query.getFirst();
         } catch (ParseException e) {
@@ -230,44 +233,21 @@ public class MainScreen extends Activity implements ConnectionCallbacks, OnConne
         tab9.saveInBackground();tab10.saveInBackground();
     }
 
-
-
-    protected void startLocationUpdates() {
-        currentLocation = LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
-    }
-
     @Override
     public void onConnected(Bundle bundle) {
-
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
 
+    protected void startLocationUpdates() {
+
+    }
+
     @Override
     public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
     }
 
     @Override
