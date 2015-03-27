@@ -24,7 +24,6 @@ public class ParseApplication extends Application {
 		ParseObject.registerSubclass(Event.class);
 		ParseObject.registerSubclass(Tab.class);
 		ParseObject.registerSubclass(Post.class);
-		ParseObject.registerSubclass(Message.class);
 		Parse.initialize(this, "6yME94t22PAckT61vJXKbC5HtcRFqenDVBMLboD9",
 				"cA242AT2n20dzyueOqL5p5nYXTceiaHKEMJvruwJ");
 
