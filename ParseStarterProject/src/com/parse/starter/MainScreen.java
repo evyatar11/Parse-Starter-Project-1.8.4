@@ -2,28 +2,18 @@ package com.parse.starter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainScreen extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainScreen extends Activity {
 
     public static final String USER_ID_KEY = "userId";
 
@@ -49,9 +39,8 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
     private ArrayAdapter<Post> adapter;
     private boolean tab1;
     LocationRequest mLocationRequest;
-    private boolean mRequestingLocationUpdates=true;
+    //    private boolean mRequestingLocationUpdates=true;
     private Location currentLocation;
-
     private GoogleApiClient mGoogleApiClient;
 
     public MainScreen() {
@@ -68,9 +57,24 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
         buildGoogleApiClient();
         createLocationRequest();
         mGoogleApiClient.connect();
+        mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(Bundle bundle) {
+//                if(mRequestingLocationUpdates) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        Log.i("listennnnn", location.toString());
+//                            currentLocation=location;
+                    }
+                });
+//                }
+            }
+            @Override
+            public void onConnectionSuspended(int i) {
+            }
 
-
-
+        });
 //        runOnUiThread(new Runnable() {
 //
 //            @Override
@@ -80,11 +84,10 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
 //            }
 //        });
 //        Log.i("latitude",currentLocation.getLatitude()+"");
-////      getCurrentArea();
-////      getListOfTabs();
+//        getCurrentArea();
+//        getListOfTabs();
 //        btt1.setText(list.get(0).getName().toString());
 //        btt2.setText(list.get(1).getName().toString());
-
 
     }
 
@@ -98,8 +101,6 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
     }
@@ -158,9 +159,9 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
         Log.i("lat after",point.getLatitude()+" ");
         Log.i("long after",point.getLongitude()+" ");
         ParseQuery<Event> query = Event.getQuery();
-           query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
+        query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
         query.whereNear(Event.LOCATION_KEY, point);
-            query.setLimit(1);
+        query.setLimit(1);
         try {
             currentEvent = query.getFirst();
         } catch (ParseException e) {
@@ -233,27 +234,7 @@ public class MainScreen extends Activity implements GoogleApiClient.ConnectionCa
         tab9.saveInBackground();tab10.saveInBackground();
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
 
-    protected void startLocationUpdates() {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
 
 
     class TabListener implements OnClickListener {
