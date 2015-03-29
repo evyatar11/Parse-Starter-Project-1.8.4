@@ -11,8 +11,10 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,10 +40,11 @@ public class MainScreen extends Activity {
     private ArrayList<Post> listofposts;
     private ArrayAdapter<Post> adapter;
     private boolean tab1;
-    LocationRequest mLocationRequest;
-    //    private boolean mRequestingLocationUpdates=true;
+    private LocationRequest mLocationRequest;
     private Location currentLocation;
     private GoogleApiClient mGoogleApiClient;
+    private boolean check;
+    private ProgressDialog progress;
 
     public MainScreen() {
     }
@@ -51,51 +54,69 @@ public class MainScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        initXml();
-
+        init();
+        createDatabase();
         //google play request location update parameters setup
-        buildGoogleApiClient();
-        createLocationRequest();
-        mGoogleApiClient.connect();
-        mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+        AsyncTask task = new AsyncTask() {
             @Override
-            public void onConnected(Bundle bundle) {
-//                if(mRequestingLocationUpdates) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        Log.i("listennnnn", location.toString());
-//                            currentLocation=location;
-                    }
-                });
-//                }
-            }
-            @Override
-            public void onConnectionSuspended(int i) {
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+
             }
 
-        });
-//        runOnUiThread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                while(currentLocation==null){}
-//                mRequestingLocationUpdates=false;
-//            }
-//        });
-//        Log.i("latitude",currentLocation.getLatitude()+"");
-//        getCurrentArea();
-//        getListOfTabs();
-//        btt1.setText(list.get(0).getName().toString());
-//        btt2.setText(list.get(1).getName().toString());
+            @Override
+            protected void onPreExecute (){
+                progress = ProgressDialog.show(MainScreen.this, "Loading Data", "Please Wait",
+                        true);
+            }
+            @Override
+            protected Object doInBackground(Object[] params) {
+                buildGoogleApiClient();
+                createLocationRequest();
+                mGoogleApiClient.connect();
+                mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
+
+                            @Override
+                            public void onLocationChanged(Location location) {
+                                if(check){
+                                    currentLocation=location;
+                                    Log.i("listennnnn", location.getLatitude()+"");
+                                    Log.i("listennnnn", location.getLongitude()+"");
+                                    check=false;
+                                    setCurrentArea();
+                                    setListOfTabs();
+                                    mGoogleApiClient.disconnect();
+                                    currentLocation.getLatitude();
+                                    currentLocation.getLongitude();
+                                    btt1.setText(list.get(0).getName().toString());
+                                    btt2.setText(list.get(1).getName().toString());
+                                    progress.dismiss();
+                                }
+                            }
+
+                        });
+                    }
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                    }
+
+                });
+                return null;
+            }
+
+        };
+        task.execute();
 
     }
 
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -104,9 +125,10 @@ public class MainScreen extends Activity {
                 .addApi(LocationServices.API)
                 .build();
     }
-    private void initXml() {
+    private void init() {
         setContentView(R.layout.activity_list_view_android_example);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        check=true;
         btt1 = (Button) findViewById(R.id.tab1);
         btt2 = (Button) findViewById(R.id.tab2);
         etMessage = (EditText) findViewById(R.id.etMessage);
@@ -134,7 +156,7 @@ public class MainScreen extends Activity {
         }
     }
 
-    private void getListOfTabs() {
+    private void setListOfTabs() {
         ParseQuery<Tab> query = Tab.getQuery();
         query.whereEqualTo(Tab.PARENT_TAB, currentEvent);
         try {
@@ -148,7 +170,7 @@ public class MainScreen extends Activity {
 
     }
 
-    private void getCurrentArea() {
+    private void setCurrentArea() {
         // check if GPS enabled
         double latitude = currentLocation.getLatitude();
         double longitude = currentLocation.getLongitude();
@@ -159,7 +181,7 @@ public class MainScreen extends Activity {
         Log.i("lat after",point.getLatitude()+" ");
         Log.i("long after",point.getLongitude()+" ");
         ParseQuery<Event> query = Event.getQuery();
-        query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
+//        query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
         query.whereNear(Event.LOCATION_KEY, point);
         query.setLimit(1);
         try {
