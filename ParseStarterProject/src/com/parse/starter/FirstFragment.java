@@ -68,7 +68,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         tab = tabHandler.getTab(page);
 
         postList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, postList);
+        adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_expandable_list_item_1, postList);
         listView.setAdapter(adapter);
         getListOfPosts(tab);
         return view;
@@ -114,6 +114,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
             String data = etMessage.getText().toString();
             Post message = new Post();
             message.setBody(ParseUser.getCurrentUser().getUsername() + ":\n" + data);
+            message.setParent(tab);
             postList.add(message);
             adapter.notifyDataSetChanged();
             message.saveInBackground();

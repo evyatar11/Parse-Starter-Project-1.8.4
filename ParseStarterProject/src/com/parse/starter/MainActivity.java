@@ -9,14 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -24,15 +20,11 @@ import com.google.android.gms.location.LocationServices;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends SetupUiKeyboard implements TabHandler {
 
 
-    public static final String USER_ID_KEY = "userId";
 
 
     public enum TabsIndex {TREMPS,BABYSITTER,SECONDHAND}
@@ -87,7 +79,7 @@ public class MainActivity extends SetupUiKeyboard implements TabHandler {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
 
-                progress.dismiss();
+
             }
 
             @Override
@@ -116,7 +108,7 @@ public class MainActivity extends SetupUiKeyboard implements TabHandler {
                                     setListOfTabs();
                                     adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
                                     vpPager.setAdapter(adapterViewPager);
-
+                                    progress.dismiss();
                                 }
                             }
                         });

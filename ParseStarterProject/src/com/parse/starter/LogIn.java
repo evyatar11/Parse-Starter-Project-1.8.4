@@ -26,6 +26,7 @@ public class LogIn extends SetupUiKeyboard implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         isGPSEnable();
         // link xml to code
