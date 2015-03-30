@@ -54,8 +54,10 @@ public class MainScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        //init xml
         init();
-        createDatabase();
+        //create database instead of doing via web
+//        createDatabase();
         //google play request location update parameters setup
         AsyncTask task = new AsyncTask() {
             @Override
@@ -197,8 +199,8 @@ public class MainScreen extends Activity {
     private void createDatabase() {
 
         ParseGeoPoint laniado = new ParseGeoPoint(32.345063,34.857255);
-        ParseGeoPoint gaash = new ParseGeoPoint(32.326161,34.847946);
-        ParseGeoPoint sironit = new ParseGeoPoint(32.330199, 34.848404);
+        ParseGeoPoint gaash = new ParseGeoPoint(32.228921,34.8246);
+        ParseGeoPoint sironit = new ParseGeoPoint(32.330314, 34.847775);
         ParseGeoPoint zometNearHome = new ParseGeoPoint(32.329581, 34.862058);
         ParseGeoPoint home = new ParseGeoPoint(32.329041, 34.863829);
         Event event1 = new Event();
