@@ -1,6 +1,7 @@
 package com.parse.starter;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.EditText;
 /**
  * Created by evia on 3/30/2015.
  */
-public class SetupUiKeyboard extends Activity {
+public class SetupUiKeyboard extends FragmentActivity {
 
     public void setupUI(View view) {
 

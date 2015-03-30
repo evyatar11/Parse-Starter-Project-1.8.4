@@ -1,6 +1,5 @@
 package com.parse.starter;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
@@ -75,9 +74,7 @@ public class LogIn extends SetupUiKeyboard implements
                     .getText().toString(), new LogInCallback() {
                 public void done(ParseUser user, ParseException e) {
                     if (user != null) {
-                        Intent intent = new Intent(LogIn.this, MainScreen.class);
-                        intent.putExtra("user", mail.getText().toString());
-                        String str = mail.getText().toString();
+                        Intent intent = new Intent(LogIn.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
