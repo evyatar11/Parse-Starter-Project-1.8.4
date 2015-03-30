@@ -24,7 +24,7 @@ public class Post extends ParseObject {
 		return ParseQuery.getQuery(Post.class);
 	}
 
-	public void setAuthor(ParseUser user){
+	public void setAuthor(String user){
 		put(AUTHOR_KEY,user);
 	}
 	public void setTitle(String title) {

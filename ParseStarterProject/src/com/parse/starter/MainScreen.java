@@ -12,10 +12,12 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +27,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainScreen extends Activity {
+public class MainScreen extends SetupUiKeyboard {
 
     public static final String USER_ID_KEY = "userId";
 
@@ -45,10 +47,10 @@ public class MainScreen extends Activity {
     private GoogleApiClient mGoogleApiClient;
     private boolean check;
     private ProgressDialog progress;
-
+    private String current_user;
+    private Bundle bundle;
     public MainScreen() {
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,8 @@ public class MainScreen extends Activity {
         super.onCreate(savedInstanceState);
         //init xml
         init();
+        setupUI(findViewById(R.id.parent));
+        getExtras();
         //create database instead of doing via web
 //        createDatabase();
         //google play request location update parameters setup
@@ -70,6 +74,7 @@ public class MainScreen extends Activity {
             protected void onPreExecute (){
                 progress = ProgressDialog.show(MainScreen.this, "Loading Data", "Please Wait",
                         true);
+
             }
             @Override
             protected Object doInBackground(Object[] params) {
@@ -111,7 +116,11 @@ public class MainScreen extends Activity {
 
         };
         task.execute();
+    }
 
+    private void getExtras() {
+        bundle = getIntent().getExtras();
+        current_user  = bundle.getString("user");
     }
 
 
@@ -163,6 +172,7 @@ public class MainScreen extends Activity {
         query.whereEqualTo(Tab.PARENT_TAB, currentEvent);
         try {
             list = query.find();
+            Log.d("","");
             Log.d("cell[0]", list.get(0).getName().toString());
             Log.d("cell[1]", list.get(1).getName().toString());
         } catch (ParseException e1) {
@@ -183,7 +193,6 @@ public class MainScreen extends Activity {
         Log.i("lat after",point.getLatitude()+" ");
         Log.i("long after",point.getLongitude()+" ");
         ParseQuery<Event> query = Event.getQuery();
-//        query.whereWithinKilometers(Event.LOCATION_KEY, point, 0.5);
         query.whereNear(Event.LOCATION_KEY, point);
         query.setLimit(1);
         try {
@@ -291,8 +300,8 @@ public class MainScreen extends Activity {
             if (v.getId() == R.id.btSend) {
                 String data = etMessage.getText().toString();
                 Post message = new Post();
-                message.setBody(data);
-                message.setAuthor(ParseUser.getCurrentUser());
+                message.setBody(current_user+":\n"+data);
+//                message.setAuthor(current_user);
                 if (tab1 == true)
                     message.setParent(list.get(0));
                 else

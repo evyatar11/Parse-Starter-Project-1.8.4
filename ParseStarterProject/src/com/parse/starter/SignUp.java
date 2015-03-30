@@ -3,8 +3,6 @@ package com.parse.starter;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
-
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -13,12 +11,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class SignUp extends Activity implements OnClickListener {
-	TextView signTitle;
-	Button createUser;
-	EditText signMail, signPass, signPhone, signNickname;
-
+public class SignUp extends SetupUiKeyboard implements OnClickListener {
+	private TextView signTitle;
+	private Button createUser;
+	private EditText signMail, signPass, signPhone, signNickname;
+    private ParseUser user;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -33,6 +32,7 @@ public class SignUp extends Activity implements OnClickListener {
 		signNickname = (EditText) findViewById(R.id.signNickname);
 		createUser.setOnClickListener(this);
 		initTypeface();
+        setupUI(findViewById(R.id.parent));
 	}
 
 	private void initTypeface() {
@@ -46,7 +46,7 @@ public class SignUp extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.createUser) {
 			// create new user
-			ParseUser user = new ParseUser();
+			user = new ParseUser();
 			user.setUsername(signMail.getText().toString());
 			user.setPassword(signPass.getText().toString());
 			user.setEmail(signMail.getText().toString());
@@ -59,8 +59,8 @@ public class SignUp extends Activity implements OnClickListener {
 					if (e == null) {
 						finish();
 					} else {
-						// if(e.get)
-					}
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
 				}
 			});
 		}

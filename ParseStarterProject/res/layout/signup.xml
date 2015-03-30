@@ -4,7 +4,8 @@
     android:layout_height="fill_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    android:weightSum="10" >
+    android:weightSum="10"
+    android:id="@+id/parent">
 
     <LinearLayout
         android:layout_width="fill_parent"

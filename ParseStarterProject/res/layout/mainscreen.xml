@@ -4,14 +4,14 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    android:id="@+id/top" >
+    android:id="@+id/parent" >
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/background"
         android:orientation="vertical"
-        android:layout_above="@id/top" >
+        >
 
         <ListView
             android:id="@+id/list"

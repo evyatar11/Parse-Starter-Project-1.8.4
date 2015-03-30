@@ -18,14 +18,13 @@ public class ParseApplication extends Application {
 		ParseCrashReporting.enable(this);
 
 		// Enable Local Datastore.
-		Parse.enableLocalDatastore(this);
+//		Parse.enableLocalDatastore(this);
 
 		// Add your initialization code here
 		ParseObject.registerSubclass(Event.class);
 		ParseObject.registerSubclass(Tab.class);
 		ParseObject.registerSubclass(Post.class);
-		Parse.initialize(this, "6yME94t22PAckT61vJXKbC5HtcRFqenDVBMLboD9",
-				"cA242AT2n20dzyueOqL5p5nYXTceiaHKEMJvruwJ");
+		Parse.initialize(this, "6yME94t22PAckT61vJXKbC5HtcRFqenDVBMLboD9", "cA242AT2n20dzyueOqL5p5nYXTceiaHKEMJvruwJ");
 
 		ParseUser.enableAutomaticUser();
 		ParseACL defaultACL = new ParseACL();
