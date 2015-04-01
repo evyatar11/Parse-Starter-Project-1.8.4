@@ -43,27 +43,33 @@ public class SignUp extends SetupUiKeyboard implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		if (v.getId() == R.id.createUser) {
-			// create new user
-			user = new ParseUser();
-			user.setUsername(signMail.getText().toString());
-			user.setPassword(signPass.getText().toString());
-			user.setEmail(signMail.getText().toString());
-			// other fields can be set just like with ParseObject
-			user.put("phone", signPhone.getText().toString());
-			user.put("nickname", signNickname.getText().toString());
-
-			user.signUpInBackground(new SignUpCallback() {
-				public void done(ParseException e) {
-					if (e == null) {
-						finish();
-					} else {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        // TODO Auto-generated method stub
+        if (v.getId() == R.id.createUser) {
+            // create new user
+            user = new ParseUser();
+            user.setUsername(signMail.getText().toString());
+            user.setPassword(signPass.getText().toString());
+            user.setEmail(signMail.getText().toString());
+            // other fields can be set just like with ParseObject
+            user.put("phone", signPhone.getText().toString());
+            user.put("nickname", signNickname.getText().toString());
+            user.signUpInBackground(new SignUpCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        // Show a simple Toast message upon successful registration
+                        Toast.makeText(getApplicationContext(),
+                                "Successfully Signed up, please log in.",
+                                Toast.LENGTH_LONG).show();
+                        finish();
+                    }else {
+                        Toast.makeText(getApplicationContext(),
+                                "Sign up Error", Toast.LENGTH_LONG)
+                                .show();
                     }
-				}
-			});
-		}
-	}
+                }
 
+            });
+        }
+    }
 }

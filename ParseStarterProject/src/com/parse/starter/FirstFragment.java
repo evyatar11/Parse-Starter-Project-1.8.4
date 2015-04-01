@@ -1,18 +1,18 @@
 package com.parse.starter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -28,7 +28,6 @@ import java.util.List;
 public class FirstFragment extends Fragment implements View.OnClickListener {
     // Store instance variables
     private static final String TAG = "FirstFragment";
-    private String title;
     private int page;
     private ArrayAdapter<Post> adapter;
     private List<Post> postList;
@@ -36,7 +35,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     private TabHandler tabHandler;
     private TextView etMessage;
     private Button btMessage;
-    private List<Tab> list;
+    private Context context;
 
     // newInstance constructor for creating fragment with arguments
     public static FirstFragment newInstance(int page) {
@@ -51,6 +50,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = getActivity().getApplicationContext();
         page = getArguments().getInt("TabPosition", 0);
 
     }
@@ -61,6 +61,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.firstpage, container, false);
+
         ListView listView = (ListView) view.findViewById(R.id.list);
         btMessage = (Button)view.findViewById(R.id.btSend);
         etMessage = (TextView)view.findViewById(R.id.etMessage);
@@ -112,12 +113,28 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.btSend) {
             String data = etMessage.getText().toString();
+            etMessage.setText("");
+            hideKeyboard(getActivity());
             Post message = new Post();
-            message.setBody(ParseUser.getCurrentUser().getUsername() + ":\n" + data);
+            String name = ParseUser.getCurrentUser().get("nickname").toString();
+//            message.setTitle(name+"'s post:");
+            message.setBody(name +"\n" + data);
             message.setParent(tab);
             postList.add(message);
             adapter.notifyDataSetChanged();
             message.saveInBackground();
         }
     }
+    public static void hideKeyboard(Context ctx) {
+        InputMethodManager inputManager = (InputMethodManager) ctx
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus:
+        View v = ((Activity) ctx).getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
 }

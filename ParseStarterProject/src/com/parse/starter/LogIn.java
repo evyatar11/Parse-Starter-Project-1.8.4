@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facebook.FacebookSdk;
 import com.parse.LogInCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
@@ -18,9 +21,11 @@ import com.parse.ParseUser;
 public class LogIn extends SetupUiKeyboard implements
         android.view.View.OnClickListener {
 
-    TextView title, banner;
-    Button login, signup;
-    EditText mail, pass;
+    private TextView title, banner;
+    private Button login, signup;
+    private EditText mail, pass;
+    private Intent intent;
+
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,7 @@ public class LogIn extends SetupUiKeyboard implements
         boolean enabled = service
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!enabled) {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
         }
 
@@ -68,25 +73,30 @@ public class LogIn extends SetupUiKeyboard implements
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.login) {
-
-            // login to parse database
-
-            ParseUser.logInInBackground(mail.getText().toString(), pass
-                    .getText().toString(), new LogInCallback() {
-                public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
-                        Intent intent = new Intent(LogIn.this, MainActivity.class);
+            String usernametxt = mail.getText().toString();
+            String passwordtxt = pass.getText().toString();
+            ParseUser.logInInBackground(usernametxt,passwordtxt,new LogInCallback() {
+                @Override
+                public void done(ParseUser parseUser, ParseException e) {
+                    if(parseUser!=null){
+                        intent = new Intent(LogIn.this,MainActivity.class);
                         startActivity(intent);
-                        finish();
-                    } else {
-                        // Signup failed. Look at the ParseException to
-                        // see what happened.
+                        Toast.makeText(getApplicationContext(),
+                                "Successfully Logged in",
+                                Toast.LENGTH_LONG).show();
+//                        finish();
+                    }else {
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "No such user exist, please signup",
+                                Toast.LENGTH_LONG).show();
                     }
                 }
             });
 
-        } else if (v.getId() == R.id.signup) {
-            Intent intent = new Intent(LogIn.this, SignUp.class);
+        }
+        else if (v.getId() == R.id.signup) {
+            intent = new Intent(LogIn.this, SignUp.class);
             startActivity(intent);
         }
 

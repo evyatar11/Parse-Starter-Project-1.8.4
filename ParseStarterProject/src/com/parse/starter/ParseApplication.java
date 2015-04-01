@@ -24,12 +24,13 @@ public class ParseApplication extends Application {
 		ParseObject.registerSubclass(Event.class);
 		ParseObject.registerSubclass(Tab.class);
 		ParseObject.registerSubclass(Post.class);
-		Parse.initialize(this, "6yME94t22PAckT61vJXKbC5HtcRFqenDVBMLboD9", "cA242AT2n20dzyueOqL5p5nYXTceiaHKEMJvruwJ");
+		Parse.initialize(this, "Y6wEKCeBbSfOTP0zHcOW3E6vsHa8LbZiWvYaxtQ5", "SMCAoDyLicA3m8R7ZSfnXvlAnw9A2aJlMjo6BwP5");
 
 		ParseUser.enableAutomaticUser();
 		ParseACL defaultACL = new ParseACL();
 		// Optionally enable public read access.
-		// defaultACL.setPublicReadAccess(true);
+		defaultACL.setPublicReadAccess(true);
+//        defaultACL.setPublicWriteAccess(true);
 		ParseACL.setDefaultACL(defaultACL, true);
 	}
 }
