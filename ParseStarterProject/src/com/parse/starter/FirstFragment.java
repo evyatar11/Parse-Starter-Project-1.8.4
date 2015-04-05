@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * Created by evia on 3/30/2015.
  */
-public class FirstFragment extends Fragment implements View.OnClickListener {
+public class FirstFragment extends Fragment implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
     // Store instance variables
     private static final String TAG = "FirstFragment";
     private int page;
@@ -38,7 +39,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     private Context context;
 
     // newInstance constructor for creating fragment with arguments
-    public static FirstFragment newInstance(int page) {
+    public static FirstFragment newInstance (int page) {
         FirstFragment fragmentFirst = new FirstFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("TabPosition", page);
@@ -137,4 +138,8 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
+    @Override
+    public void onRefresh() {
+
+    }
 }

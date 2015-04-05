@@ -51,6 +51,17 @@
             android:inputType="textPassword"
             android:hint="Password" />
 
+        <CheckBox
+            android:id="@+id/saveLoginCheckBox"
+            android:layout_width="191dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextPassword"
+            android:text="Remember me?"
+            android:textColor="#FFF"
+            android:checked="false"
+            android:gravity="left|center"
+            android:layout_gravity="center" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
